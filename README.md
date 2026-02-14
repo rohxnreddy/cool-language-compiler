@@ -1,6 +1,5 @@
-<p align="center">
-
-```text
+<div align="center">
+<pre>
 :'######:::'#######:::'#######::'##:::::::
 '##... ##:'##.... ##:'##.... ##: ##:::::::
  ##:::..:: ##:::: ##: ##:::: ##: ##:::::::
@@ -9,8 +8,21 @@
  ##::: ##: ##:::: ##: ##:::: ##: ##:::::::
 . ######::. #######::. #######:: ########:
 :......::::.......::::.......:::........::
-```
+</pre>
+</div>
 
-</p>
+<h1 align="center">
+COOL LANGUAGE COMPILER CONSTRUCTION
+</h1>
 
-COOL language compiler construction.
+
+
+## About
+This project implements a compiler for the COOL programming language.
+
+## Contributors
+
+| GitHub ID | Name            | ID Number |
+| --------- | --------------- | --------- |
+| [rohxnreddy](https://github.com/rohxnreddy) | Rohan Reddy Devarapalli | 2023A7PS0138H         |
+
