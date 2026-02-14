@@ -1,2 +1,16 @@
-# cool-language-compiler
-Implementation of a compiler for the COOL (Classroom Object-Oriented Language) as part of a compiler construction project.
+<h1 align="center">COOL Language Compiler</h1>
+
+<p align="center">
+
+```text
+:'######:::'#######:::'#######::'##:::::::
+'##... ##:'##.... ##:'##.... ##: ##:::::::
+ ##:::..:: ##:::: ##: ##:::: ##: ##:::::::
+ ##::::::: ##:::: ##: ##:::: ##: ##:::::::
+ ##::::::: ##:::: ##: ##:::: ##: ##:::::::
+ ##::: ##: ##:::: ##: ##:::: ##: ##:::::::
+. ######::. #######::. #######:: ########:
+:......::::.......::::.......:::........::
+```
+
+</p>
