@@ -1,5 +1,3 @@
-<h1 align="center">COOL Language Compiler</h1>
-
 <p align="center">
 
 ```text
@@ -14,3 +12,5 @@
 ```
 
 </p>
+
+COOL language compiler construction.
