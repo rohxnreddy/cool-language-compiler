@@ -59,11 +59,6 @@ harness.py
 lex.yy.c
 .gitignore
 lex.yy.cpp
-lexer.l
 main.cpp
 Makefile
 .gitignore
-parser.tab.cpp
-parser.tab.hpp
-parser.y
-test_suite.cool

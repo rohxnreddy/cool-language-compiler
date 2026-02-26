@@ -1,0 +1,42 @@
+-- 01: Nested Blocks
+class Main { main() : Object { { { { { 1.0; }; }; }; }; }; };
+-- 02: If-Then-Else
+class Main { main() : Object { if true then 1.0 else 2.0 fi }; };
+-- 03: Arithmetic
+class Main { main() : Object { (1.0 + (2.0 * 3.0)) }; };
+-- 04: While Loop
+class Main { f():Object { while true loop 1.0 pool }; };
+-- 05: Not Logic
+class Main { f():Object { not (true and x < 5.0) }; };
+-- 06: Minimal
+class M { f() : Object { 0.0 }; };
+-- 07: Single ID
+class A { x() : Object { y }; };
+-- 08: Precedence
+class Main { main() : Object { 1.0 + 2.0 * 3.0 < 4.0 }; };
+-- 09: Simple Block
+class Main { main() : Object { { 1.0; } }; };
+-- 10: String EQ
+class Main { f():Object { "a" = "b" }; };
+-- 11: Multi-class 1
+class A { f():Object { 1.0 }; };
+-- 12: Multi-class 2
+class B { g():Object { 2.0 }; };
+-- 13: Large Logic
+class Main { f():Object { true and false or not true }; };
+-- 14: Empty Stub
+class Stub { f():Object { { } }; };
+-- 15: Nested Assignments
+class Main { f():Object { x <- y <- 1.0 }; };
+-- 16: ERROR: Missing fi
+class Main { main() : Object { if true then 1.0 else 2.0 }; };
+-- 17: ERROR: Bad Assignment
+class Main { main() : Object { x = 5.0 }; };
+-- 18: ERROR: Empty Block Body
+class Main { main() : Object { { ; } }; };
+-- 19: ERROR: Missing semi
+class Main { main() : Object { { 1.0 } }; };
+-- 20: ERROR: Bad Math
+class Main { main() : Object { 1.0 + * 2.0 }; };
+-- 21: ERROR: Assignment in While
+class Main { f():Object { while x <- 5.0 loop 1.0 pool }; };
