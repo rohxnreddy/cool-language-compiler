@@ -1,58 +1,32 @@
 # --- Top-Level Structure ---
 Program      → Class
-Class        → class TYPE_ID { FeatureList } ;
+Class        → class TYPE_ID { Function } ;
+Function     → OBJECT_ID ( ) { ExprList } ;
 
-FeatureList  → Feature
-             | FeatureList Feature
+# --- Statement Types ---
+Expr         → TYPE_ID OBJECT_ID <- LogicExpr   # Variable Declaration
+             | OBJECT_ID <- LogicExpr           # Assignment
+             | LogicExpr                        # General Expression
 
-Feature      → OBJECT_ID ( ) : TYPE_ID { Expr } ;
-             | OBJECT_ID ( ) : TYPE_ID { ExprList } ;
+# --- Logic Hierarchy (OR < AND < NOT) ---
+LogicExpr    → LogicExpr or LogicTerm | LogicTerm
+LogicTerm    → LogicTerm and LogicFactor | LogicFactor
+LogicFactor  → not LogicFactor | CompareExpr
 
-# --- Expression Hierarchy ---
-Expr         → AssignExpr
-             | LogicExpr
+# --- Relational (Non-Associative) ---
+CompareExpr  → ArithExpr < ArithExpr | ArithExpr = ArithExpr | ArithExpr != ArithExpr | ArithExpr
 
-# Assignment (Right-Associative)
-AssignExpr   → OBJECT_ID <- Expr
+# --- Arithmetic Hierarchy (+ / - < * / /) ---
+ArithExpr    → ArithExpr + Term | ArithExpr - Term | Term
+Term         → Term * Factor | Term / Factor | Factor
 
-# Logic Stratification (Precedence: OR < AND < NOT)
-LogicExpr    → LogicExpr or LogicTerm
-             | LogicTerm
-
-LogicTerm    → LogicTerm and LogicFactor
-             | LogicFactor
-
-LogicFactor  → not LogicFactor
-             | CompareExpr
-
-# Relational (Non-Associative)
-CompareExpr  → ArithExpr < ArithExpr
-             | ArithExpr = ArithExpr
-             | ArithExpr != ArithExpr
-             | ArithExpr
-
-# Arithmetic (Binary Precedence: + / - < * / /)
-ArithExpr    → ArithExpr + Term
-             | ArithExpr - Term
-             | Term
-
-Term         → Term * Factor
-             | Term / Factor
-             | Factor
-
-# Atoms & High Precedence Unary Operators
-# MULTIPLE PRECEDENCE: MINUS appears here (Unary) and in ArithExpr (Binary)
-Factor       → - Factor                  # Unary Negation (Highest Arithmetic Precedence)
-             | OBJECT_ID
-             | FLOAT
-             | STRING
-             | BOOL
+# --- Atoms & Multiple Precedence ---
+# Unary Minus (- Factor) is defined here for highest precedence
+Factor       → - Factor
              | ( Expr )
-             | { }                       # Empty stub
-             | { ExprList }              # Scoped block
-             | while LogicExpr loop Expr pool
-             | if LogicExpr then Expr else Expr fi
+             | OBJECT_ID | FLOAT | STRING | BOOL
+             | while LogicExpr loop { ExprList } pool
+             | if LogicExpr then { ExprList } else { ExprList } fi
 
-# Block Structure (Left-Recursive & Stack-Safe)
-ExprList     → Expr ;
-             | ExprList Expr ;
+# --- Block Structure ---
+ExprList     → Expr ; | ExprList Expr ;
