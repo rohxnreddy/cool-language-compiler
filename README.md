@@ -41,9 +41,11 @@ COOL-LANGUAGE-COMPILER/
 │
 ├── parser/
 │   └── parser.md
+│   └── parser_tree.md
 │
 ├── .gitignore
 ├── project_description.pdf
+├── cc_midsem_report.pdf
 └── README.md
 ```
 
