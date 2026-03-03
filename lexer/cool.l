@@ -29,12 +29,11 @@ STRING      \"([^\\\"\n]|\\.)*\"
 {TYPEID}                {fprintf(yyout, "TYPE_ID: %s\n", yytext);}
 {OBJECTID}              {fprintf(yyout, "OBJECT_ID: %s\n", yytext);}
 {FLOAT}                 {fprintf(yyout, "FLOAT: %s\n", yytext);}
+{DIGIT}{ALPHANUM}       {fprintf(yyout, "LEXER ERROR : Identifier cannot start with a number\n", yytext);}
 {INTEGER}               {fprintf(yyout, "INTEGER: %s\n", yytext);}
 {STRING}                {fprintf(yyout, "STRING: %s\n", yytext);}
 "<-"                    {fprintf(yyout, "ASSIGN\n"); }
-"=>"                    {fprintf(yyout, "DARROW\n"); }
 "<="                    {fprintf(yyout, "LE\n"); }
-">="                    {fprintf(yyout, "GE\n"); }
 "!="                    {fprintf(yyout, "NE\n"); }
 "{"                     {fprintf(yyout, "LBRACE\n"); }
 "}"                     {fprintf(yyout, "RBRACE\n"); }
@@ -50,12 +49,13 @@ STRING      \"([^\\\"\n]|\\.)*\"
 "/"                     {fprintf(yyout, "DIV\n"); }
 "~"                     {fprintf(yyout, "NEG\n"); }
 "<"                     {fprintf(yyout, "LT\n"); }
-">"                     {fprintf(yyout, "GT\n"); }
-"="                     {fprintf(yyout, "EQ\n"); }
 "@"                     {fprintf(yyout, "AT\n"); }
 .                       {fprintf(yyout, "LEXER ERROR: Unrecognized character '%s'\n", yytext); }
 
 %%
+int yywrap() {
+    return 1;
+}
 
 int main(int argc, char *argv[]) {
     
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
     yyin = in;
 
-    FILE *out = fopen("output.txt", "w");
+    FILE *out = fopen("output_false.txt", "w");
     if (!out) {
         perror("Error opening output file");
         return 1;

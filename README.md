@@ -41,9 +41,11 @@ COOL-LANGUAGE-COMPILER/
 │
 ├── parser/
 │   └── parser.md
+│   └── parser_tree.md
 │
 ├── .gitignore
 ├── project_description.pdf
+├── cc_midsem_report.pdf
 └── README.md
 ```
 
@@ -64,5 +66,4 @@ Detailed documentation for each module can be found in their respective director
 | [Trenbolone17](https://github.com/Trenbolone17)|Albert Sebastain |2023A7PS0118H|
 | [Crisp79](https://github.com/Crisp79)|Akshith Vuppala  |2023A7PS0032H|
 | [Parallax-Ace](https://github.com/Parallax-Ace)         |Adithya Nama|2023A7PS0171H|
-
 

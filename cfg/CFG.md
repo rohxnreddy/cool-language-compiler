@@ -19,6 +19,7 @@ FeatureList → Feature FeatureList
 Feature → ID ( ) : TYPE { Expr } ;
 ```
 ---
+
 ## Expressions
 ```
 Expr → LetExpr
@@ -82,9 +83,11 @@ ExprList → Expr ;
 ## Arithmetic Expressions (With Precedence)
 ```
 ArithExpr → ArithExpr + Term
+            ArithExpr - Term
           | Term
 
 Term → Term * Factor
+       Term / Factor
      | Factor
 
 Factor → ID
@@ -115,70 +118,3 @@ ArgList → Expr , ArgList
 
 ---
 
-# Parse Tree
-```
-Program
-└── ClassList
-    └── Class
-        ├── class
-        ├── TYPE (Main)
-        ├── {
-        ├── FeatureList
-        │   └── Feature
-        │       ├── ID (main)
-        │       ├── ( )
-        │       ├── :
-        │       ├── TYPE (Object)
-        │       └── Expr
-        │           └── Block
-        │               └── {
-        │                   └── Expr
-        │                       └── LetExpr
-        │                           ├── let
-        │                           ├── LetDeclList
-        │                           │   ├── x : Int
-        │                           │   ├── y : Int ← 2
-        │                           │   ├── z : Int ← 3
-        │                           │   └── flag : Bool ← false
-        │                           ├── in
-        │                           └── Block
-        │                               └── {
-        │                                   ├── AssignExpr
-        │                                   │   ├── x
-        │                                   │   ├── ←
-        │                                   │   └── 1
-        │                                   │
-        │                                   ├── AssignExpr
-        │                                   │   ├── z
-        │                                   │   ├── ←
-        │                                   │   └── ArithExpr
-        │                                   │       ├── x
-        │                                   │       ├── +
-        │                                   │       └── Term
-        │                                   │           ├── y
-        │                                   │           ├── *
-        │                                   │           └── 2
-        │                                   │
-        │                                   ├── WhileExpr
-        │                                   │   ├── while
-        │                                   │   ├── BoolExpr (z > 0)
-        │                                   │   ├── loop
-        │                                   │   └── Block
-        │                                   │       └── z ← z - 1
-        │                                   │   └── pool
-        │                                   │
-        │                                   └── IfExpr
-        │                                       ├── if
-        │                                       ├── BoolExpr
-        │                                       │   ├── (x < y)
-        │                                       │   ├── and
-        │                                       │   └── not flag
-        │                                       ├── then
-        │                                       │   └── out_string("Condition True\n")
-        │                                       ├── else
-        │                                       │   └── out_string("Condition False\n")
-        │                                       └── fi
-        │
-        ├── }
-        └── ;
-```        

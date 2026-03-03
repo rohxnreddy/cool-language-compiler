@@ -3,29 +3,37 @@ class Main {
     main() : Object {
 
         {
-            let x : Int,
-                y : Int <- 2,
-                z : Int <- 3,
+            -- Variable declaration using let
+            let x : Int     ,
+                y : Int = 2, -- ERROR : no '=' operator
+                1z : Int <- 3, --ERROR : identifier starts with number 
                 flag : Bool <- false
             in
             {
 
-                x = 1;   -- ERROR 1: wrong assignment operator (should be <-)
+                -- Assignment statement
+                x <- 1;
 
-                z <- x + y * ;   --  ERROR 2: incomplete expression
-
-                while z > 0
+                -- multiple precedence (* higher than +)
+                z <- x + y * 2;     
+                
+                -- Loop statement
+                while z > 0 loop -- ERROR : no '>' operator
                     {
-                        z <- z - 1
+                        z <- z - 1; -- ERROR : wrong '>-' operator
                     }
-                pool;   --  ERROR 3: missing 'loop' keyword and missing semicolon
+                pool;
 
-                if (x < y) and not flag
+                -- Conditional statement
+                if (x < y) and not flag then
                     out_string("Condition True\n")
                 else
-                    out_string("Condition False\n");
-                --  ERROR 4: missing 'then' and missing 'fi'
-
+                    out_string("Condition False\n")
+                fi;
+                (*
+                    this is a multiline comment
+                    here it is closed with * and )
+                
             };
         }
     };

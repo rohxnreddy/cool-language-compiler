@@ -16,9 +16,12 @@ class Main {
 
                 -- multiple precedence (* higher than +)
                 z <- x + y * 2;     
-
+                (*
+                    this is a multiline comment
+                    here it is closed with * and )
+                *)
                 -- Loop statement
-                while z > 0 loop
+                while 0 < z loop
                     {
                         z <- z - 1;
                     }

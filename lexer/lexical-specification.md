@@ -4,18 +4,18 @@
 ## 1. Keywords
 | Token | Regular Expression | Description |
 | :--- | :--- | :--- |
-| **CLASS** | `(?i)class` | Start of class definition |
-| **ELSE** | `(?i)else` | Alternative branch of `if` |
-| **FI** | `(?i)fi` | End of `if` statement |
-| **IF** | `(?i)if` | Conditional start |
-| **IN** | `(?i)in` | Let expression body delimiter |
-| **LET** | `(?i)let` | Variable declaration start |
-| **LOOP** | `(?i)loop` | Start of while loop body |
-| **POOL** | `(?i)pool` | End of while loop body |
-| **THEN** | `(?i)then` | Consequent branch of `if` |
-| **WHILE** | `(?i)while` | While loop start |
-| **NOT** | `(?i)not` | Logical negation |
-| **AND** | `(?i)and` | Logical conjunction |
+| **CLASS** | `class` | Start of class definition |
+| **ELSE** | `else` | Alternative branch of `if` |
+| **FI** | `fi` | End of `if` statement |
+| **IF** | `if` | Conditional start |
+| **IN** | `in` | Let expression body delimiter |
+| **LET** | `let` | Variable declaration start |
+| **LOOP** | `loop` | Start of while loop body |
+| **POOL** | `pool` | End of while loop body |
+| **THEN** | `then` | Consequent branch of `if` |
+| **WHILE** | `while` | While loop start |
+| **NOT** | `not` | Logical negation |
+| **AND** | `and` | Logical conjunction |
 
 ---
 
@@ -33,8 +33,8 @@
 | Token | Regular Expression | Description |
 | :--- | :--- | :--- |
 | **INT** | `[0-9]+` | Sequence of digits |
-| **BOOL** | `t[rR][uU][eE]|f[aA][lL][sS][eE]` | Boolean constants |
-| **STRING** | `\"([^\"\\\n]|\\.)*\"` | Characters enclosed in double quotes |
+| **BOOL** | `true`\|`false` | Boolean constants |
+| **STRING** | `\"([^\"\\\n]\|\\.)*\"` | Characters enclosed in double quotes |
 
 ---
 
@@ -54,7 +54,9 @@
 | **MINUS** | `-` | Subtraction |
 | **MULT** | `\*` | Multiplication |
 | **DIV** | `/` | Division |
+| **LE** | `<=` | Less than equal comparison |
 | **LT** | `<` | Less than comparison |
+
 
 ---
 

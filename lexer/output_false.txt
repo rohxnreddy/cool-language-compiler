@@ -16,10 +16,10 @@ COMMA
 OBJECT_ID: y
 COLON
 TYPE_ID: Int
-ASSIGN
+LEXER ERROR: Unrecognized character '='
 INTEGER: 2
 COMMA
-OBJECT_ID: z
+LeXER ERROR : Identifier cannot start with a number
 COLON
 TYPE_ID: Int
 ASSIGN
@@ -45,9 +45,9 @@ MULT
 INTEGER: 2
 SEMICOLON
 KEYWORD: while
-INTEGER: 0
-LT
 OBJECT_ID: z
+LEXER ERROR: Unrecognized character '>'
+INTEGER: 0
 KEYWORD: loop
 LBRACE
 OBJECT_ID: z
@@ -80,10 +80,4 @@ STRING: "Condition False\n"
 RPAREN
 KEYWORD: fi
 SEMICOLON
-RBRACE
-SEMICOLON
-RBRACE
-RBRACE
-SEMICOLON
-RBRACE
-SEMICOLON
+LEXER ERROR: EOF inside comment
