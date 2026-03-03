@@ -1,0 +1,341 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titling}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{makecell} 
+\usepackage{enumitem}
+\usepackage{tfrupee}
+\usepackage{tabularx}
+\usepackage[T1]{fontenc}
+
+% \usepackage{hyperref}
+\usepackage{array}
+\usepackage{geometry}
+% Set page geometry
+\geometry{
+  a4paper,
+  left=3.5cm,
+  right=3.5cm,
+  top=2.5cm,
+  bottom=2.5cm
+}
+\usepackage{titlesec}  % Ensure you include the titlesec package
+% Format section headings
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{1em}{}  % Large & Bold
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{}  % Slightly smaller
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}  % Normal size & Bold
+% Adjust spacing if needed
+\titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 4pt minus 2pt}{4pt plus 2pt minus 2pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 2pt minus 2pt}{4pt plus 2pt minus 2pt}
+\renewcommand{\cftsecfont}{\bfseries}
+\renewcommand{\cftsubsecfont}{\bfseries}
+
+
+\begin{document}
+
+% Title page
+\begin{titlepage}
+\centering
+{\fontsize{40}{48}\selectfont \textbf{A Project Report for Compiler Construction}}\\[1cm]
+% BITS Pilani Logo - you'll need to add the actual logo file
+\includegraphics[width=0.4\textwidth]{bits_logo.png}\\[1cm]
+{\Large Birla Institute Of Technology and Science Pilani\\
+Hyderabad Campus}\\[1cm]
+{\Large \textbf{Compiler Construction \\(CS F363)}}\\[0.5cm]
+{\large Under the supervision of\\
+\textbf{Prof. Jabez Christopher  \& Prof. Aruna Malapati}}\\[1.5cm]
+{\large Submitted By: \textbf{Group 15}}\\[1cm]
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Sr No.} & \textbf{Name} & \textbf{ID Number} \\
+\hline
+1 & VENU SAI YELESVARAPU & 2023A7PS0149H \\
+\hline
+2 & ROHAN REDDY DEVARAPALLI & 2023A7PS0138H \\
+\hline
+3 & ALBERT SEBASTAIN & 2023A7PS0118H \\
+\hline
+4 & AKSHITH VUPPALA & 2023A7PS0032H \\
+\hline
+5 & ADITHYA NAMA & 2023A7PS0171H \\
+\hline
+\end{tabular}
+
+\end{titlepage}
+
+\pagebreak
+% Table of Contents 
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+COOL (Classroom Object-Oriented Language) contains a number of programming language features common in other object oriented languages (such as Java). 
+\begin{itemize}
+    \item \textbf{Pure OOP:} Strictly object-oriented and requires single inheritance and encapsulation.
+    \item \textbf{Static Typing:} Uses type checking at compile time to make sure types are safe.
+    \item \textbf{Expression-Based:} Most language constructs are expressions that return a value.
+    \item \textbf{Minimalist Syntax:} On purpose, it leaves out complicated syntactic sugar in favor of simple logic.
+    \item \textbf{Core Classes:} Uses a simple set of built-in classes that are the building blocks of the language (like Object, Int, and String).
+\end{itemize}
+\pagebreak
+
+\section{Context Free Grammar}
+\subsection{Start Symbol}
+
+\[
+\text{Program} \rightarrow \text{ClassList}
+\]
+
+\subsection{Classes}
+
+\begin{align*}
+\text{ClassList} &\rightarrow \text{Class}\ \text{ClassList} \\
+                 &\mid \text{Class} \\[6pt]
+\text{Class} &\rightarrow \texttt{class}\ \text{TYPE}\ \{ \text{FeatureList} \}\ ; \\[6pt]
+\text{FeatureList} &\rightarrow \text{Feature}\ \text{FeatureList} \\
+                   &\mid \varepsilon \\[6pt]
+\text{Feature} &\rightarrow \text{ID}\ ( \ ) : \text{TYPE}\ \{ \text{Expr} \}\ ;
+\end{align*}
+
+\subsection{Expressions}
+
+\begin{align*}
+\text{Expr} &\rightarrow \text{LetExpr} \\
+            &\mid \text{AssignExpr} \\
+            &\mid \text{WhileExpr} \\
+            &\mid \text{IfExpr} \\
+            &\mid \text{Block} \\
+            &\mid \text{ArithExpr} \\
+            &\mid \text{BoolExpr} \\
+            &\mid \text{ID} \\
+            &\mid \text{INT} \\
+            &\mid \text{BOOL} \\
+            &\mid \text{STRING} \\
+            &\mid \text{FunctionCall}
+\end{align*}
+
+\subsection{Let Expression}
+
+\begin{align*}
+\text{LetExpr} &\rightarrow \texttt{let}\ \text{LetDeclList}\ \texttt{in}\ \text{Expr} \\[6pt]
+\text{LetDeclList} &\rightarrow \text{LetDecl}\ ,\ \text{LetDeclList} \\
+                   &\mid \text{LetDecl} \\[6pt]
+\text{LetDecl} &\rightarrow \text{ID} : \text{TYPE} \\
+               &\mid \text{ID} : \text{TYPE} \leftarrow \text{Expr}
+\end{align*}
+
+\subsection{Assignment}
+
+\[
+\text{AssignExpr} \rightarrow \text{ID} \leftarrow \text{Expr}
+\]
+
+\subsection{While Loop}
+
+\[
+\text{WhileExpr} \rightarrow \texttt{while}\ \text{Expr}\ \texttt{loop}\ \text{Expr}\ \texttt{pool}
+\]
+
+\subsection{If Statement}
+
+\[
+\text{IfExpr} \rightarrow 
+\texttt{if}\ \text{Expr}\ \texttt{then}\ \text{Expr}\ \texttt{else}\ \text{Expr}\ \texttt{fi}
+\]
+
+\subsection{Block}
+
+\begin{align*}
+\text{Block} &\rightarrow \{ \text{ExprList} \} \\[6pt]
+\text{ExprList} &\rightarrow \text{Expr}\ ; \\
+                &\mid \text{Expr}\ ;\ \text{ExprList}
+\end{align*}
+
+\subsection{Arithmetic Expressions (With Precedence)}
+
+\begin{align*}
+\text{ArithExpr} &\rightarrow \text{ArithExpr} + \text{Term} \\
+                 &\mid \text{ArithExpr} - \text{Term} \\
+                 &\mid \text{Term} \\[6pt]
+\text{Term} &\rightarrow \text{Term} * \text{Factor} \\
+            &\mid \text{Term} / \text{Factor} \\
+            &\mid \text{Factor} \\[6pt]
+\text{Factor} &\rightarrow \text{ID} \\
+              &\mid \text{INT} \\
+              &\mid ( \text{Expr} )
+\end{align*}
+
+\subsection{Boolean Expressions}
+
+\begin{align*}
+\text{BoolExpr} &\rightarrow \text{Expr} < \text{Expr} \\
+                &\mid \text{Expr}\ \texttt{and}\ \text{Expr} \\
+                &\mid \texttt{not}\ \text{Expr} \\
+                &\mid \text{BOOL}
+\end{align*}
+
+\subsection{Function Call}
+
+\begin{align*}
+\text{FunctionCall} &\rightarrow \text{ID} ( \text{ArgList} ) \\[6pt]
+\text{ArgList} &\rightarrow \text{Expr}\ ,\ \text{ArgList} \\
+               &\mid \text{Expr} \\
+               &\mid \varepsilon
+\end{align*}
+
+\pagebreak
+ 
+\section{Regular Expression for Tokens}
+
+%------------------------------------------------
+
+\subsection{Keywords}
+
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Token} & \textbf{Regular Expression} & \textbf{Description} \\
+\midrule
+CLASS & \verb|class| & Start of class definition \\
+ELSE & \verb|else| & Alternative branch of if \\
+FI & \verb|fi| & End of if statement \\
+IF & \verb|if| & Conditional start \\
+IN & \verb|in| & Let expression body delimiter \\
+LET & \verb|let| & Variable declaration start \\
+LOOP & \verb|loop| & Start of while loop body \\
+POOL & \verb|pool| & End of while loop body \\
+THEN & \verb|then| & Consequent branch of if \\
+WHILE & \verb|while| & While loop start \\
+NOT & \verb|not| & Logical negation \\
+AND & \verb|and| & Logical conjunction \\
+\bottomrule
+\end{tabularx}
+
+
+
+%------------------------------------------------
+\subsection{Operators and Delimiters}
+
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Token} & \textbf{Regular Expression} & \textbf{Description} \\
+\midrule
+ASSIGN & \verb|<-| & Assignment operator \\
+LPAREN & \verb|(| & Left parenthesis \\
+RPAREN & \verb|)| & Right parenthesis \\
+LBRACE & \texttt{\{} & Left curly brace \\
+RBRACE & \texttt{\}} & Right curly brace \\
+COLON & \verb|:| & Type declaration separator \\
+SEMICOLON & \verb|;| & Statement terminator \\
+COMMA & \verb|,| & List separator \\
+PLUS & \verb|+| & Addition \\
+MINUS & \verb|-| & Subtraction \\
+MULT & \verb|*| & Multiplication \\
+DIV & \verb|/| & Division \\
+LE & \verb|<=| & Less than or equal comparison \\
+LT & \verb|<| & Less than comparison \\
+\bottomrule
+\end{tabularx}
+
+%------------------------------------------------
+\subsection{Identifiers and Types}
+
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Token} & \textbf{Regular Expression} & \textbf{Description} \\
+\midrule
+TYPE & \verb|[A-Z][a-zA-Z0-9_]*| & Must start with uppercase (e.g., Int, Main) \\
+ID & \verb|[a-z][a-zA-Z0-9_]*| & Must start with lowercase (e.g., x, main) \\
+\bottomrule
+\end{tabularx}
+
+%------------------------------------------------
+\subsection{Literals}
+
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Token} & \textbf{Regular Expression} & \textbf{Description} \\
+\midrule
+INT & \verb|[0-9]+| & Sequence of digits \\
+BOOL & \verb|true| \textbar\ \verb|false| & Boolean constants \\
+STRING & \texttt{\detokenize{"([^"\n]|\\.)*"}} & Characters enclosed in double quotes \\
+\bottomrule
+\end{tabularx}
+%------------------------------------------------
+\subsection{Whitespace and Comments}
+
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Category} & \textbf{Regular Expression} & \textbf{Action} \\
+\midrule
+WS & \verb|[ \t\r\n]+| & Skip whitespace \\
+COMMENT & \verb|--.*| & Skip single-line comments \\
+B-COMMENT & \verb|\(\*([^*]|\*[^)])*\*\)| & Skip block comments \\
+\bottomrule
+\end{tabularx}
+
+\pagebreak
+
+\section{Setup Instructions}
+
+
+\subsection*{Execution Steps}
+\begin{enumerate}
+    \item \textbf{Extract the Files:} Ensure the following files are located in your current working directory:
+    \begin{itemize}
+        \item \texttt{cool.l}
+        \item \texttt{validprogram.cl}
+        \item \texttt{invalidprogram.cl}
+    \end{itemize}
+
+    \item \textbf{Compile the Lex File:} Generate the C source code from the Lex specification by executing the following command:
+\begin{verbatim}
+lex cool.l
+\end{verbatim}
+
+    \item \textbf{Compile the C Code:} Compile the newly generated \texttt{lex.yy.c} file into an executable. You must link the Flex library using the \texttt{-ll} flag:
+\begin{verbatim}
+gcc lex.yy.c -o lexer -ll
+\end{verbatim}
+
+    \item \textbf{Run the Lexer:} The lexer is designed to process \texttt{validprogram.cl} by default. If you want to process a different file, provide it as a command-line argument. In both cases, it redirects the output to \texttt{output.txt}.
+    
+    To run with the default file (\texttt{validprogram.cl}):
+\begin{verbatim}
+./lexer
+\end{verbatim}
+    
+    To run with a custom file (e.g., \texttt{invalidprogram.cl}):
+\begin{verbatim}
+./lexer invalidprogram.cl
+\end{verbatim}
+
+\end{enumerate}
+
+\pagebreak
+
+\section{Lexical Errors}
+The following errors are in the \texttt{invalidprogram.cl}
+\begin{itemize}
+    \item Line 08: There is no \texttt{=} operator in the language.
+    \item Line 09: Identifier cannot start with a number
+
+    \item Line 21: There is no \texttt{>} operator in the language. any conditional should only use \texxttt{<} or \texttt{<=} 
+    \item Line 36: Multiline Comment bracket doesnt close and goes to EOF 
+\end{itemize}
+
+\end{document}
+
