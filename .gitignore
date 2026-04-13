@@ -61,8 +61,8 @@ lex.yy.c
 lex.yy.cpp
 lexer.l
 main.cpp
-Makefile
 .gitignore
+coolc
 parser.tab.cpp
 parser.tab.hpp
 parser.y

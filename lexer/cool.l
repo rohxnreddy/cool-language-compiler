@@ -1,7 +1,13 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include "y.tab.h"
 %}
+
+%option yylineno
+%option noyywrap
 
 DIGIT       [0-9]
 LOWER       [a-z]
@@ -10,7 +16,6 @@ ALPHANUM    [a-zA-Z0-9_]
 TYPEID      {UPPER}{ALPHANUM}*
 OBJECTID    {LOWER}{ALPHANUM}*
 INTEGER     {DIGIT}+
-FLOAT       {DIGIT}+"."{DIGIT}+
 STRING      \"([^\\\"\n]|\\.)*\"
 
 %x COMMENT
@@ -19,67 +24,48 @@ STRING      \"([^\\\"\n]|\\.)*\"
 
 "(*"                    { BEGIN(COMMENT); }
 <COMMENT>"*)"           { BEGIN(INITIAL); }
-<COMMENT>.|\n           { /* Skip everything inside the comment state */ }
-<COMMENT><<EOF>>        { fprintf(yyout, "LEXER ERROR: EOF inside comment\n"); return 0; }
+<COMMENT>(.|\n)         { /* skip */ }
+<COMMENT><<EOF>>        { fprintf(stderr, "LEXER ERROR: EOF inside comment at line %d\n", yylineno); return 0; }
 
-[ \t\r\n\f\v]+          { /* Skip whitespace */ }
-"--".*                  { /* Skip single line comments */ }
-"class"|"else"|"fi"|"if"|"in"|"inherits"|"isvoid"|"let"|"loop"|"pool"|"then"|"while"|"case"|"esac"|"new"|"of"|"not"|"and"|"or" { fprintf(yyout, "KEYWORD: %s\n", yytext); }
-"true"|"false"          {fprintf(yyout, "BOOLEAN: %s\n", yytext);}
-{TYPEID}                {fprintf(yyout, "TYPE_ID: %s\n", yytext);}
-{OBJECTID}              {fprintf(yyout, "OBJECT_ID: %s\n", yytext);}
-{FLOAT}                 {fprintf(yyout, "FLOAT: %s\n", yytext);}
-{DIGIT}{ALPHANUM}       {fprintf(yyout, "LEXER ERROR : Identifier cannot start with a number\n", yytext);}
-{INTEGER}               {fprintf(yyout, "INTEGER: %s\n", yytext);}
-{STRING}                {fprintf(yyout, "STRING: %s\n", yytext);}
-"<-"                    {fprintf(yyout, "ASSIGN\n"); }
-"<="                    {fprintf(yyout, "LE\n"); }
-"!="                    {fprintf(yyout, "NE\n"); }
-"{"                     {fprintf(yyout, "LBRACE\n"); }
-"}"                     {fprintf(yyout, "RBRACE\n"); }
-"("                     {fprintf(yyout, "LPAREN\n"); }
-")"                     {fprintf(yyout, "RPAREN\n"); }
-":"                     {fprintf(yyout, "COLON\n"); }
-";"                     {fprintf(yyout, "SEMICOLON\n"); }
-","                     {fprintf(yyout, "COMMA\n"); }
-"."                     {fprintf(yyout, "DOT\n"); }
-"+"                     {fprintf(yyout, "PLUS\n"); }
-"-"                     {fprintf(yyout, "MINUS\n"); }
-"*"                     {fprintf(yyout, "MULT\n"); }
-"/"                     {fprintf(yyout, "DIV\n"); }
-"~"                     {fprintf(yyout, "NEG\n"); }
-"<"                     {fprintf(yyout, "LT\n"); }
-"@"                     {fprintf(yyout, "AT\n"); }
-.                       {fprintf(yyout, "LEXER ERROR: Unrecognized character '%s'\n", yytext); }
+[ \t\r\n\f\v]+          { /* skip */ }
+"--".*                  { /* skip line comment */ }
+
+"class"                 { return CLASS; }
+"let"                   { return LET; }
+"in"                    { return IN; }
+"while"                 { return WHILE; }
+"loop"                  { return LOOP; }
+"pool"                  { return POOL; }
+"if"                    { return IF; }
+"then"                  { return THEN; }
+"else"                  { return ELSE; }
+"fi"                    { return FI; }
+"and"                   { return AND; }
+"not"                   { return NOT; }
+
+"true"                  { yylval.bool_val = true;  return BOOL; }
+"false"                 { yylval.bool_val = false; return BOOL; }
+{INTEGER}               { yylval.int_val = atoi(yytext); return INT; }
+{STRING}                { yylval.str_val = strdup(yytext); return STRING; }
+
+{TYPEID}                { yylval.str_val = strdup(yytext); return TYPE; }
+{OBJECTID}              { yylval.str_val = strdup(yytext); return ID; }
+
+"<-"                    { return ASSIGN; }
+"{"                     { return '{'; }
+"}"                     { return '}'; }
+"("                     { return '('; }
+")"                     { return ')'; }
+":"                     { return ':'; }
+";"                     { return ';'; }
+","                     { return ','; }
+"+"                     { return '+'; }
+"-"                     { return '-'; }
+"*"                     { return '*'; }
+"/"                     { return '/'; }
+"<"                     { return '<'; }
+"<="                    { return LE; }
+
+.                       { fprintf(stderr, "LEXER ERROR line %d: Unrecognized character '%s'\n", yylineno, yytext); return yytext[0]; }
 
 %%
-int yywrap() {
-    return 1;
-}
-
-int main(int argc, char *argv[]) {
-    
-    const char *filename = (argc > 1) ? argv[1] : "validprogram.cl";
-    FILE *in = fopen(filename, "r");
-    if (!in) {
-        perror("Error opening input file");
-        return 1;
-    }
-
-    yyin = in;
-
-    FILE *out = fopen("output_false.txt", "w");
-    if (!out) {
-        perror("Error opening output file");
-        return 1;
-    }
-
-    yyout = out;
-
-    yylex();
-
-    fclose(in);
-    fclose(out);
-
-    return 0;
-}
