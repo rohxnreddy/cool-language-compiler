@@ -28,10 +28,10 @@ class Main {
                 pool;
 
                 -- Conditional statement
-                if (x < y) and flag then
-                    out_string("Condition False\n")
-                else
+                if (x < y) and not flag then
                     out_string("Condition True\n")
+                else
+                    out_string("Condition False\n")
                 fi;
 
             };
