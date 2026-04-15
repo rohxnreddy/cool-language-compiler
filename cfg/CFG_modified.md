@@ -11,7 +11,7 @@ Expr         → TYPE_ID OBJECT_ID <- LogicExpr   # Variable Declaration
 # --- Logic Hierarchy (OR < AND < NOT) ---
 LogicExpr    → LogicExpr or LogicTerm | LogicTerm
 LogicTerm    → LogicTerm and LogicFactor | LogicFactor
-LogicFactor  → not LogicFactor | CompareExpr
+LogicFactor  → not LogicFactor|CompareExpr
 
 # --- Relational (Non-Associative) ---
 CompareExpr  → ArithExpr < ArithExpr | ArithExpr = ArithExpr | ArithExpr != ArithExpr | ArithExpr
