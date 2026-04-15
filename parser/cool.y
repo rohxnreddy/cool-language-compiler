@@ -48,8 +48,9 @@ void yyerror(const char *s);
 /* * Precedence and Associativity Rules 
  * From lowest to highest precedence 
  */
+%right IN
 %right ASSIGN
-%left AND OR
+%left AND
 %right NOT
 %nonassoc LT LE NE
 %left PLUS MINUS
@@ -117,9 +118,6 @@ Expr:
   | Block         { $$ = $1; }
   | ArithExpr     { $$ = $1; }
   | BoolExpr      { $$ = $1; }
-  | OBJECTID      { $$ = make_id($1); }
-  | INT_CONST     { $$ = make_int($1); }
-  | BOOL_CONST    { $$ = make_bool($1); }
   | STR_CONST     { $$ = make_string($1); }
   | FunctionCall  { $$ = $1; }
     ;
@@ -221,7 +219,8 @@ Factor:
  * 2.10 Boolean Expressions
  * --------------------------------------------------------------------------- */
 BoolExpr:
-    Expr LT Expr   { $$ = make_op(NODE_BOOL_EXPR, OP_LT, $1, $3); }
+    Expr LE Expr   { $$ = make_op(NODE_BOOL_EXPR, OP_LE, $1, $3); }
+  | Expr LT Expr   { $$ = make_op(NODE_BOOL_EXPR, OP_LT, $1, $3); }
   | Expr AND Expr  { $$ = make_op(NODE_BOOL_EXPR, OP_AND, $1, $3); }
   | NOT Expr       { $$ = make_op(NODE_BOOL_EXPR, OP_NOT, $2, NULL); }
   | BOOL_CONST     { $$ = make_bool($1); }

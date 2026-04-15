@@ -1,12 +1,15 @@
 # CFG for COOL
 
 ## Start Symbol
+
 ```
 Program → ClassList
 ```
+
 ---
 
 ## Classes
+
 ```
 ClassList → Class ClassList
           | Class
@@ -18,9 +21,11 @@ FeatureList → Feature FeatureList
 
 Feature → ID ( ) : TYPE { Expr } ;
 ```
+
 ---
 
 ## Expressions
+
 ```
 Expr → LetExpr
      | AssignExpr
@@ -29,15 +34,14 @@ Expr → LetExpr
      | Block
      | ArithExpr
      | BoolExpr
-     | ID
-     | INT
-     | BOOL
      | STRING
      | FunctionCall
 ```
+
 ---
 
 ## Let Expression
+
 ```
 LetExpr → let LetDeclList in Expr
 
@@ -51,6 +55,7 @@ LetDecl → ID : TYPE
 ---
 
 ## Assignment
+
 ```
 AssignExpr → ID ← Expr
 ```
@@ -58,6 +63,7 @@ AssignExpr → ID ← Expr
 ---
 
 ## While Loop
+
 ```
 WhileExpr → while Expr loop Expr pool
 ```
@@ -65,6 +71,7 @@ WhileExpr → while Expr loop Expr pool
 ---
 
 ## If Statement
+
 ```
 IfExpr → if Expr then Expr else Expr fi
 ```
@@ -72,15 +79,18 @@ IfExpr → if Expr then Expr else Expr fi
 ---
 
 ## Block
+
 ```
 Block → { ExprList }
 
 ExprList → Expr ;
          | Expr ; ExprList
 ```
+
 ---
 
 ## Arithmetic Expressions (With Precedence)
+
 ```
 ArithExpr → ArithExpr + Term
             ArithExpr - Term
@@ -98,8 +108,10 @@ Factor → ID
 ---
 
 ## Boolean Expressions
+
 ```
-BoolExpr → Expr < Expr
+BoolExpr → Expr <= Expr
+         | Expr < Expr
          | Expr and Expr
          | not Expr
          | BOOL
@@ -108,6 +120,7 @@ BoolExpr → Expr < Expr
 ---
 
 ## Function Call
+
 ```
 FunctionCall → ID ( ArgList )
 
@@ -117,4 +130,3 @@ ArgList → Expr , ArgList
 ```
 
 ---
-

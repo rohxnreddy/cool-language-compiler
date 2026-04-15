@@ -28,11 +28,11 @@ $(TARGET): $(OBJS)
 
 # Generate Bison parser
 $(YACC_OUT_C) $(YACC_OUT_H): $(YACC_SRC)
-	bison -d -o $(YACC_OUT_C) $(YACC_SRC)
+	bison -Wcounterexamples -d -o $(YACC_OUT_C) $(YACC_SRC)
 
 # Generate Flex lexer
 $(LEX_OUT): $(LEX_SRC) $(YACC_OUT_H)
-	flex -o $(LEX_OUT) $(LEX_SRC)
+	lex -o $(LEX_OUT) $(LEX_SRC)
 
 # Pattern rules for objects in subdirectories
 ast.o: parser/ast.c
