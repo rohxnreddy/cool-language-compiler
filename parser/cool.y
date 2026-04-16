@@ -2,7 +2,88 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Declare functions provided by Flex */
+#ifndef AST_H
+#define AST_H
+
+#include <stdbool.h>
+
+typedef enum {
+    NODE_PROGRAM,
+    NODE_CLASS,
+    NODE_FEATURE,
+    NODE_LET,
+    NODE_LET_DECL,
+    NODE_ASSIGN,
+    NODE_WHILE,
+    NODE_IF,
+    NODE_BLOCK,
+    NODE_ARITH,
+    NODE_BOOL_EXPR,
+    NODE_ID,
+    NODE_INT,
+    NODE_BOOL,
+    NODE_STRING,
+    NODE_FUNC_CALL
+} NodeType;
+
+typedef enum {
+    OP_PLUS,
+    OP_MINUS,
+    OP_MULT,
+    OP_DIV,
+    OP_LT,
+    OP_LE,
+    OP_AND,
+    OP_NOT
+} Operator;
+
+typedef struct ASTNode {
+    NodeType type;
+    
+    union {
+        struct { struct ASTNode* class_list; } program;
+        struct { char* type_name; struct ASTNode* features; } class_node;
+        struct { char* id; char* return_type; struct ASTNode* body; } feature;
+        struct { struct ASTNode* declarations; struct ASTNode* body; } let_expr;
+        struct { char* id; char* type_name; struct ASTNode* init_expr; } let_decl;
+        struct { char* id; struct ASTNode* expr; } assign;
+        struct { struct ASTNode* condition; struct ASTNode* body; } while_expr;
+        struct { struct ASTNode* condition; struct ASTNode* then_branch; struct ASTNode* else_branch; } if_expr;
+        struct { struct ASTNode* expr_list; } block;
+        struct { Operator op; struct ASTNode* left; struct ASTNode* right; } op_expr;
+
+        struct { char* id; struct ASTNode* arg_list; } func_call;
+
+        char* id_val;
+        int int_val;
+        bool bool_val;
+        char* string_val;
+    } data;
+
+    struct ASTNode* next;
+
+} ASTNode;
+
+ASTNode* append_node(ASTNode* list, ASTNode* node);
+ASTNode* make_program(ASTNode* class_list);
+ASTNode* make_class(const char* type_name, ASTNode* features);
+ASTNode* make_feature(const char* id, const char* return_type, ASTNode* body);
+ASTNode* make_let(ASTNode* declarations, ASTNode* body);
+ASTNode* make_let_decl(const char* id, const char* type_name, ASTNode* init_expr);
+ASTNode* make_assign(const char* id, ASTNode* expr);
+ASTNode* make_while(ASTNode* condition, ASTNode* body);
+ASTNode* make_if(ASTNode* condition, ASTNode* then_branch, ASTNode* else_branch);
+ASTNode* make_block(ASTNode* expr_list);
+ASTNode* make_op(NodeType type, Operator op, ASTNode* left, ASTNode* right);
+ASTNode* make_func_call(const char* id, ASTNode* arg_list);
+ASTNode* make_id(const char* id);
+ASTNode* make_int(int value);
+ASTNode* make_bool(bool value);
+ASTNode* make_string(const char* str);
+
+#endif 
+
+/* Flex declarations */
 extern int yylex();
 extern int yylineno;
 extern char *yytext;
@@ -10,44 +91,28 @@ extern FILE *yyin;
 
 void yyerror(const char *s);
 
+/* Global AST root */
+ASTNode *ast_root;
 %}
 
-/* * THE FIX: %code requires forces BISON to put this include into the 
- * generated header file (cool.tab.h) BEFORE the %union definition.
- */
-%code requires {
-    #include "ast.h"
-}
-
-/* Global variable to hold the root of the parsed AST */
-%code {
-    ASTNode *ast_root;
-}
-
-/* Define the types of data that tokens and non-terminals can carry */
+/* Union */
 %union {
     int ival;
     float fval;
     char *str;
-    
-    /* Unified AST Node Pointer from ast.h */
     ASTNode *node;
 }
 
-/* Tokens that carry data */
+/* Tokens */
 %token <str> TYPEID OBJECTID STR_CONST
 %token <ival> INT_CONST BOOL_CONST
 %token <fval> FLOAT_CONST
 
-/* Keyword Tokens */
-%token CLASS ELSE FI IF IN  LET LOOP POOL THEN WHILE OF NOT AND 
+%token CLASS ELSE FI IF IN LET LOOP POOL THEN WHILE OF NOT AND
+%token ASSIGN LE NE LBRACE RBRACE LPAREN RPAREN COLON SEMICOLON COMMA DOT
+%token PLUS MINUS MULT DIV NEG LT AT ERROR_TOKEN
 
-/* Symbol Tokens */
-%token ASSIGN LE NE LBRACE RBRACE LPAREN RPAREN COLON SEMICOLON COMMA DOT PLUS MINUS MULT DIV NEG LT AT ERROR_TOKEN
-
-/* * Precedence and Associativity Rules 
- * From lowest to highest precedence 
- */
+/* Precedence */
 %right IN
 %right ASSIGN
 %left AND
@@ -56,204 +121,163 @@ void yyerror(const char *s);
 %left PLUS MINUS
 %left MULT DIV
 
-/* Non-terminal type definitions for AST construction */
-%type <node> Program ClassList Class FeatureList Feature 
-%type <node> Expr LetExpr AssignExpr WhileExpr IfExpr Block ArithExpr Term Factor BoolExpr FunctionCall
+/* Types */
+%type <node> Program ClassList Class FeatureList Feature
+%type <node> Expr LetExpr AssignExpr WhileExpr IfExpr Block
+%type <node> ArithExpr Term Factor BoolExpr FunctionCall
 %type <node> ExprList ArgList LetDeclList LetDecl
 
 %%
 
-/* ---------------------------------------------------------------------------
- * 2.1 Start Symbol
- * --------------------------------------------------------------------------- */
 Program:
-    ClassList { 
-        $$ = make_program($1); 
-        ast_root = $$; 
+    ClassList {
+        $$ = make_program($1);
+        ast_root = $$;
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.2 Classes
- * --------------------------------------------------------------------------- */
 ClassList:
-    Class ClassList { 
-        /* Right-recursive chaining: $1 is the head, $2 is the tail */
-        $$ = append_node($1, $2); 
-    }
-  | Class { 
-        $$ = $1; 
-    }
-    ;
+    Class ClassList { $$ = append_node($1, $2); }
+  | Class           { $$ = $1; }
+;
 
 Class:
-    CLASS TYPEID LBRACE FeatureList RBRACE SEMICOLON { 
-        $$ = make_class($2, $4); 
+    CLASS TYPEID LBRACE FeatureList RBRACE SEMICOLON {
+        $$ = make_class($2, $4);
     }
-    ;
+;
 
 FeatureList:
-    Feature FeatureList { 
-        $$ = append_node($1, $2); 
-    }
-  | /* epsilon */ { 
-        $$ = NULL; 
-    }
-    ;
+    Feature FeatureList { $$ = append_node($1, $2); }
+  | /* empty */         { $$ = NULL; }
+;
 
 Feature:
-    OBJECTID LPAREN RPAREN COLON TYPEID LBRACE Expr RBRACE SEMICOLON { 
-        $$ = make_feature($1, $5, $7); 
+    OBJECTID LPAREN RPAREN COLON TYPEID LBRACE Expr RBRACE SEMICOLON {
+        $$ = make_feature($1, $5, $7);
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.3 Expressions
- * --------------------------------------------------------------------------- */
+/* Expressions */
+
 Expr:
-    LetExpr       { $$ = $1; }
-  | AssignExpr    { $$ = $1; }
-  | WhileExpr     { $$ = $1; }
-  | IfExpr        { $$ = $1; }
-  | Block         { $$ = $1; }
-  | ArithExpr     { $$ = $1; }
-  | BoolExpr      { $$ = $1; }
-  | STR_CONST     { $$ = make_string($1); }
-  | FunctionCall  { $$ = $1; }
-    ;
+    LetExpr      { $$ = $1; }
+  | AssignExpr   { $$ = $1; }
+  | WhileExpr    { $$ = $1; }
+  | IfExpr       { $$ = $1; }
+  | Block        { $$ = $1; }
+  | ArithExpr    { $$ = $1; }
+  | BoolExpr     { $$ = $1; }
+  | STR_CONST    { $$ = make_string($1); }
+  | FunctionCall { $$ = $1; }
+;
 
-/* ---------------------------------------------------------------------------
- * 2.4 Let Expression
- * --------------------------------------------------------------------------- */
+/* Let */
+
 LetExpr:
-    LET LetDeclList IN Expr { 
-        $$ = make_let($2, $4); 
+    LET LetDeclList IN Expr {
+        $$ = make_let($2, $4);
     }
-    ;
+;
 
 LetDeclList:
-    LetDecl COMMA LetDeclList { 
-        $$ = append_node($1, $3); 
-    }
-  | LetDecl { 
-        $$ = $1; 
-    }
-    ;
+    LetDecl COMMA LetDeclList { $$ = append_node($1, $3); }
+  | LetDecl                  { $$ = $1; }
+;
 
 LetDecl:
-    OBJECTID COLON TYPEID { 
-        $$ = make_let_decl($1, $3, NULL); 
+    OBJECTID COLON TYPEID {
+        $$ = make_let_decl($1, $3, NULL);
     }
-  | OBJECTID COLON TYPEID ASSIGN Expr { 
-        $$ = make_let_decl($1, $3, $5); 
+  | OBJECTID COLON TYPEID ASSIGN Expr {
+        $$ = make_let_decl($1, $3, $5);
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.5 Assignment
- * --------------------------------------------------------------------------- */
+/* Assignment */
+
 AssignExpr:
-    OBJECTID ASSIGN Expr { 
-        $$ = make_assign($1, $3); 
+    OBJECTID ASSIGN Expr {
+        $$ = make_assign($1, $3);
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.6 While Loop
- * --------------------------------------------------------------------------- */
+/* While */
+
 WhileExpr:
-    WHILE Expr LOOP Expr POOL { 
-        $$ = make_while($2, $4); 
+    WHILE Expr LOOP Expr POOL {
+        $$ = make_while($2, $4);
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.7 If Statement
- * --------------------------------------------------------------------------- */
+/* If */
+
 IfExpr:
-    IF Expr THEN Expr ELSE Expr FI { 
-        $$ = make_if($2, $4, $6); 
+    IF Expr THEN Expr ELSE Expr FI {
+        $$ = make_if($2, $4, $6);
     }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.8 Block
- * --------------------------------------------------------------------------- */
+/* Block */
+
 Block:
-    LBRACE ExprList RBRACE { 
-        $$ = make_block($2); 
+    LBRACE ExprList RBRACE {
+        $$ = make_block($2);
     }
-    ;
+;
 
 ExprList:
-    Expr SEMICOLON { 
-        $$ = $1; 
-    }
-  | Expr SEMICOLON ExprList { 
-        $$ = append_node($1, $3); 
-    }
-    ;
+    Expr SEMICOLON            { $$ = $1; }
+  | Expr SEMICOLON ExprList  { $$ = append_node($1, $3); }
+;
 
-/* ---------------------------------------------------------------------------
- * 2.9 Arithmetic Expressions (With Precedence applied via Grammar)
- * --------------------------------------------------------------------------- */
+/* Arithmetic */
+
 ArithExpr:
     ArithExpr PLUS Term  { $$ = make_op(NODE_ARITH, OP_PLUS, $1, $3); }
   | ArithExpr MINUS Term { $$ = make_op(NODE_ARITH, OP_MINUS, $1, $3); }
   | Term                 { $$ = $1; }
-    ;
+;
 
 Term:
     Term MULT Factor { $$ = make_op(NODE_ARITH, OP_MULT, $1, $3); }
   | Term DIV Factor  { $$ = make_op(NODE_ARITH, OP_DIV, $1, $3); }
   | Factor           { $$ = $1; }
-    ;
+;
 
 Factor:
     OBJECTID           { $$ = make_id($1); }
   | INT_CONST          { $$ = make_int($1); }
   | LPAREN Expr RPAREN { $$ = $2; }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.10 Boolean Expressions
- * --------------------------------------------------------------------------- */
+/* Boolean */
+
 BoolExpr:
     Expr LE Expr   { $$ = make_op(NODE_BOOL_EXPR, OP_LE, $1, $3); }
   | Expr LT Expr   { $$ = make_op(NODE_BOOL_EXPR, OP_LT, $1, $3); }
   | Expr AND Expr  { $$ = make_op(NODE_BOOL_EXPR, OP_AND, $1, $3); }
   | NOT Expr       { $$ = make_op(NODE_BOOL_EXPR, OP_NOT, $2, NULL); }
   | BOOL_CONST     { $$ = make_bool($1); }
-    ;
+;
 
-/* ---------------------------------------------------------------------------
- * 2.11 Function Call
- * --------------------------------------------------------------------------- */
+/* Function Call */
+
 FunctionCall:
-    OBJECTID LPAREN ArgList RPAREN { 
-        $$ = make_func_call($1, $3); 
+    OBJECTID LPAREN ArgList RPAREN {
+        $$ = make_func_call($1, $3);
     }
-    ;
+;
 
 ArgList:
-    Expr COMMA ArgList { 
-        $$ = append_node($1, $3); 
-    }
-  | Expr { 
-        $$ = $1; 
-    }
-  | /* epsilon */ { 
-        $$ = NULL; 
-    }
-    ;
+    Expr COMMA ArgList { $$ = append_node($1, $3); }
+  | Expr               { $$ = $1; }
+  | /* empty */        { $$ = NULL; }
+;
 
 %%
 
-/* ---------------------------------------------------------------------------
- * Error handling and Main Function
- * --------------------------------------------------------------------------- */
-
 void yyerror(const char *s) {
-    fprintf(stderr, "Parser Error at line %d near \"%s\": %s\n", yylineno, yytext, s);
+    fprintf(stderr, "Parser Error at line %d near \"%s\": %s\n",
+            yylineno, yytext, s);
 }
-
