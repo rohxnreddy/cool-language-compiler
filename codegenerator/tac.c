@@ -1,6 +1,5 @@
 #include "tac.h"
 
-// Global counters
 static int temp_counter = 1;
 static int label_counter = 1;
 
@@ -38,7 +37,6 @@ void emit(TACList* list, const char* op, const char* arg1, const char* arg2, con
     }
 }
 
-// Map the AST Operator enum to a string for TAC
 const char* get_op_string(Operator op) {
     switch(op) {
         case OP_PLUS:  return "+";
@@ -53,11 +51,10 @@ const char* get_op_string(Operator op) {
     }
 }
 
-// Recursively traverse the AST and generate Quads
 char* generate_tac(ASTNode* node, TACList* list) {
     if (node == NULL) return NULL;
 
-    char* result = NULL; // To store the result variable of the current node
+    char* result = NULL; 
 
     switch (node->type) {
         
@@ -71,7 +68,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
         }
 
         case NODE_CLASS: {
-            // Note: In TAC, classes might just map to generating their features
             ASTNode* current_feature = node->data.class_node.features;
             while (current_feature) {
                 generate_tac(current_feature, list);
@@ -81,7 +77,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
         }
 
         case NODE_FEATURE: {
-            // Mark start of function
             emit(list, "FUNC_START", NULL, NULL, node->data.feature.id);
             char* body_res = generate_tac(node->data.feature.body, list);
             emit(list, "RETURN", body_res, NULL, NULL);
@@ -90,7 +85,7 @@ char* generate_tac(ASTNode* node, TACList* list) {
         }
 
         case NODE_BLOCK: {
-            // Traverse expression list, the block's result is the last expression's result
+            
             ASTNode* current_expr = node->data.block.expr_list;
             while (current_expr) {
                 result = generate_tac(current_expr, list);
@@ -147,14 +142,12 @@ char* generate_tac(ASTNode* node, TACList* list) {
             
             emit(list, "IFFALSE", cond_val, NULL, l_else);
             
-            // Then branch
             char* then_res = generate_tac(node->data.if_expr.then_branch, list);
             result = new_temp();
             if (then_res) emit(list, "=", then_res, NULL, result);
             
             emit(list, "GOTO", NULL, NULL, l_end);
             
-            // Else branch
             emit(list, "LABEL", NULL, NULL, l_else);
             if (node->data.if_expr.else_branch) {
                 char* else_res = generate_tac(node->data.if_expr.else_branch, list);
@@ -170,7 +163,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
             char* left_val = generate_tac(node->data.op_expr.left, list);
             char* right_val = NULL;
             
-            // Handle unary operators like NOT (which might not have a right child)
             if (node->data.op_expr.op != OP_NOT && node->data.op_expr.right != NULL) {
                 right_val = generate_tac(node->data.op_expr.right, list);
             }
@@ -185,7 +177,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
             int arg_count = 0;
             ASTNode* current_arg = node->data.func_call.arg_list;
             
-            // Process arguments and emit PARAM instructions
             while (current_arg) {
                 char* arg_val = generate_tac(current_arg, list);
                 emit(list, "PARAM", arg_val, NULL, NULL);
@@ -200,8 +191,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
             emit(list, "CALL", node->data.func_call.id, count_str, result);
             break;
         }
-
-        // Leaf Nodes
         case NODE_ID: {
             result = node->data.id_val;
             break;
@@ -217,7 +206,6 @@ char* generate_tac(ASTNode* node, TACList* list) {
             break;
         }
         case NODE_STRING: {
-            // Wrap in quotes for TAC visibility
             char buffer[256]; 
             snprintf(buffer, sizeof(buffer), "\"%s\"", node->data.string_val);
             result = strdup(buffer);
@@ -259,7 +247,6 @@ void print_tac_list(TACList* list) {
         } else if (strcmp(curr->op, "RETURN") == 0) {
             printf("    return %s\n", curr->arg1 ? curr->arg1 : "");
         } else {
-            // Binary or Unary operations
             if (curr->arg2) {
                 printf("    %s = %s %s %s\n", curr->result, curr->arg1, curr->op, curr->arg2);
             } else {

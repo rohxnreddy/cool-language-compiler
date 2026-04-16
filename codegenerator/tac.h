@@ -4,10 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ast.h" // Including your provided AST definition
-
-/* --- TAC Structures --- */
-
+#include "ast.h" 
 typedef struct Quad {
     char* op;
     char* arg1;
@@ -21,8 +18,6 @@ typedef struct TACList {
     Quad* tail;
 } TACList;
 
-/* --- Function Prototypes --- */
-
 void init_tac_list(TACList* list);
 char* new_temp();
 char* new_label();
@@ -31,4 +26,4 @@ char* generate_tac(ASTNode* node, TACList* list);
 void print_tac_list(TACList* list);
 void free_tac_list(TACList* list);
 
-#endif // TAC_H
+#endif 

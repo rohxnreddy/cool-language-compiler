@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ast.h"
-
-/* Utility to allocate a new node and initialize it */
 static ASTNode* alloc_node(NodeType type) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
     if (!node) {
@@ -14,8 +12,6 @@ static ASTNode* alloc_node(NodeType type) {
     node->next = NULL;
     return node;
 }
-
-/* Appends a node to the end of a linked list (useful for BISON rules) */
 ASTNode* append_node(ASTNode* list, ASTNode* node) {
     if (!list) return node;
     ASTNode* current = list;
@@ -90,7 +86,6 @@ ASTNode* make_block(ASTNode* expr_list) {
     return node;
 }
 
-/* Handles both Arithmetic and Boolean operations */
 ASTNode* make_op(NodeType type, Operator op, ASTNode* left, ASTNode* right) {
     ASTNode* node = alloc_node(type);
     node->data.op_expr.op = op;
